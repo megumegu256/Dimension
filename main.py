@@ -30,8 +30,19 @@ def rot(point,rotation):
   return lr
 
 def vec(r):
-    r = str(r)
-    return [int(r[0]),int(r[1]),int(r[2])]
+    if r =="" or "," : return [0,0,0]
+    t = 0
+    for i in range(len(r)):
+      if r[i] == ",":
+        t += 1
+    if t !=2:
+      return [0,0,0]
+    else:
+      a, b, c = map(int, r.split(","))
+      if a == "" or "," : a = 0
+      if b == "" or "," : b = 0
+      if c == "" or "," : c = 0
+      return [a,b,c]
   
 #-------------------------------------------------------------------------------
 def main():
@@ -71,22 +82,27 @@ def main():
           exit_code = "002"
 
         if event.key == pg.K_SPACE:
-          if kbd.isascii():
-            if kbdtf == 1 : 
-              for i in range(len(poses)):
-                if kbdtg == [0,i]:
-                  poses[i] = []
-                  poses[i] = vec(kbd)
-
+          if kbdtf == 1 : 
+            for i in range(len(poses)):
+              if kbdtg == [0,i]:
+                poses[i] = []
+                poses[i] = vec(kbd)
+            t = 0
+            for j in range(len(kbd)):
+              if kbd[j] == " " or ",":
+                kbd = 0
+                t += 1
+                break
+            if t == 0:
               if kbdtg == [1,0]:
-                vx = kbd
+                vx = int(kbd)
               if kbdtg == [1,1]:
-                vy = kbd
+                vy = int(kbd)
               if kbdtg == [1,2]:
-                vz = kbd
-              kbd = ""
-              kbdtg = [-1,-1]
-              kbdtf = 0
+                vz = int(kbd)
+            kbd = ""
+            kbdtg = [-1,-1]
+            kbdtf = 0
             
 
         if event.key == pg.K_0:
@@ -119,6 +135,12 @@ def main():
         elif event.key == pg.K_9:
           if kbdtf == 1:
             kbd += "9"
+        elif event.key == pg.K_MINUS:
+          if kbdtf == 1:
+            kbd += "-"
+        elif event.key == pg.K_COMMA:
+          if kbdtf == 1:
+            kbd += ","
         elif event.key == pg.K_BACKSPACE:
           if kbdtf == 1 and kbd !="":
             kbd = ""
@@ -143,7 +165,7 @@ def main():
           
 
           for i in range(len(poses)):
-            if 0 <= event.pos[0] <= 300 and 40*i <= event.pos[1] <= 40*i+20:
+            if 0 <= event.pos[0] <= 230 and 40*i <= event.pos[1] <= 40*i+20:
               kbdtf = 1
               kbdtg = [0,i]
 
@@ -208,6 +230,7 @@ def main():
 
     #点リスト
     for j in range(len(poses)):
+      pg.draw.rect(screen,"#bbeeee",(10, 40*j+20,230,20))
       screen.blit(font3.render(f"{j} -> pos:({poses[j][0]},{poses[j][1]},{poses[j][2]}){poses}", True, (0,0,0)), (10, 40*j+20))
 
 
@@ -245,7 +268,10 @@ def main():
 
 
     #入力欄
-    pg.draw.rect(screen,"#bbccee",(disp_w/2-150,disp_h*5//6,300,50))
+    if kbdtf == 0:
+      pg.draw.rect(screen,"#bbccee",(disp_w/2-150,disp_h*5//6,300,50))
+    elif kbdtf == 1:
+      pg.draw.rect(screen,"#aabbdd",(disp_w/2-150,disp_h*5//6,300,50))
     screen.blit(font4.render(f"/{kbd}", True, (0,0,0)), (disp_w/2-150,disp_h*5//6))
 
     # 画面出力の更新と同期
