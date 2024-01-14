@@ -6,7 +6,7 @@ def rot(point,rotation):
   
   rotation_x = math.radians(rotation[0]) * -1
   rotation_y = math.radians(rotation[1])
-  rotation_z = math.radians(rotation[2]) * -1
+  rotation_z = math.radians(rotation[2])
   
   rot_x = np.array([
       [1, 0, 0],
@@ -30,7 +30,7 @@ def rot(point,rotation):
   return lr
 
 def vec(r):
-    if r =="" or "," : return [0,0,0]
+    if r == "," : return [0,0,0]
     t = 0
     for i in range(len(r)):
       if r[i] == ",":
@@ -39,9 +39,9 @@ def vec(r):
       return [0,0,0]
     else:
       a, b, c = map(int, r.split(","))
-      if a == "" or "," : a = 0
-      if b == "" or "," : b = 0
-      if c == "" or "," : c = 0
+      if a == "," : a = 0
+      if b == "," : b = 0
+      if c == "," : c = 0
       return [a,b,c]
   
 #-------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ def main():
   poses = []
   poses.append([1,1,1])
 
-  rotation = [30,30,30]
+  rotation = [0,0,0]
 
 
   while not exit_flag:
@@ -87,12 +87,15 @@ def main():
               if kbdtg == [0,i]:
                 poses[i] = []
                 poses[i] = vec(kbd)
+
+
+
             t = 0
+            if kbd == "" : kbd = str(0)
             for j in range(len(kbd)):
-              if kbd[j] == " " or ",":
-                kbd = 0
+              if kbd[j] == ",":
                 t += 1
-                break
+
             if t == 0:
               if kbdtg == [1,0]:
                 vx = int(kbd)
@@ -100,9 +103,26 @@ def main():
                 vy = int(kbd)
               if kbdtg == [1,2]:
                 vz = int(kbd)
+            
+            if kbdtg == [2,0]:
+              rotation = []
+              rotation = vec(kbd)
+            
+            if kbdtg == [3,0]:
+              poses.append(vec(kbd))
+
+
+
+
             kbd = ""
             kbdtg = [-1,-1]
             kbdtf = 0
+            
+
+
+
+
+
             
 
         if event.key == pg.K_0:
@@ -165,7 +185,7 @@ def main():
           
 
           for i in range(len(poses)):
-            if 0 <= event.pos[0] <= 230 and 40*i <= event.pos[1] <= 40*i+20:
+            if 0 <= event.pos[0] <= 230 and 80*i+20 <= event.pos[1] <= 80*i+40:
               kbdtf = 1
               kbdtg = [0,i]
 
@@ -178,6 +198,15 @@ def main():
           if disp_w-100 <= event.pos[0] <= disp_w-100+20 and 400 <= event.pos[1] <= 400+20:
             kbdtf = 1
             kbdtg = [1,2]
+          
+          if disp_w-200 <= event.pos[0] <= disp_w-200+115 and 440 <= event.pos[1] <= 440+40:
+            kbdtf = 1
+            kbdtg = [2,0]
+          
+          if len(poses) <= 7:
+            if disp_w-200 <= event.pos[0] <= disp_w-200+120 and 600 <= event.pos[1] <= 600+40:
+              kbdtf = 1
+              kbdtg = [3,0]
 
     screen.fill(pg.Color("#ffffff"))
 
@@ -188,7 +217,7 @@ def main():
     Grid_S = pg.Color(0,175,175)
     
 
-    font1 = pg.font.SysFont("", int(3*grid/10))
+    font1 = pg.font.SysFont("UDデジタル教科書体", int(3*grid/10))
     font2 = pg.font.SysFont("UDデジタル教科書体", 50)
     font3 = pg.font.SysFont("UDデジタル教科書体", 30)
     font4 = pg.font.SysFont("UDデジタル教科書体", 60)
@@ -225,13 +254,23 @@ def main():
         pg.draw.circle(screen,"blue",(rot(poses[i],rotation)[0]*grid+disp_w/2,disp_h/2-rot(poses[i],rotation)[1]*grid),5)
         screen.blit(font1.render(f"{i}", True, (0,0,0)), (rot(poses[i],rotation)[0]*grid+disp_w/2+4,disp_h/2-rot(poses[i],rotation)[1]*grid-4))
 
+      
+      #回転
+      rotation[0] += vx
+      if rotation[0] >=360 : rotation[0] - 360
+      rotation[1] += vy
+      if rotation[1] >=360 : rotation[1] - 360
+      rotation[2] += vz
+      if rotation[2] >=360 : rotation[2] - 360
+
     #GUI
     pg.draw.rect(screen,"gray",(0,0,250,disp_h))
 
     #点リスト
     for j in range(len(poses)):
-      pg.draw.rect(screen,"#bbeeee",(10, 40*j+20,230,20))
-      screen.blit(font3.render(f"{j} -> pos:({poses[j][0]},{poses[j][1]},{poses[j][2]}){poses}", True, (0,0,0)), (10, 40*j+20))
+      pg.draw.rect(screen,"#bbeeee",(10, 80*j+20,230,20))
+      screen.blit(font3.render(f"{j} -> pos:({poses[j][0]},{poses[j][1]},{poses[j][2]})", True, (0,0,0)), (10, 80*j+20))
+      screen.blit(font3.render(f"{j} -> pos:({round(rot(poses[j],rotation)[0],3)},{round(rot(poses[j],rotation)[1],3)},{round(rot(poses[j],rotation)[2],3)})", True, (0,0,0)), (10, 80*j+40))
 
 
     pg.draw.rect(screen,"gray",(disp_w-250,0,250,disp_h))
@@ -266,13 +305,23 @@ def main():
     screen.blit(font2.render(f"{vz}", True, (0,0,0)), (disp_w-100, 360))
     pg.draw.rect(screen,"green",(disp_w-100,400,20,20))
 
+    pg.draw.rect(screen,"green",(disp_w-200,440,115,40))
+    screen.blit(font2.render(f"{rotation}", True, (0,0,0)), (disp_w-200, 440))
+
+    #点追加
+    screen.blit(font2.render("New Point", True, (0,0,0)), (disp_w-200, 550))
+    pg.draw.rect(screen,"green",(disp_w-200,600,120,40))
+    
+
+
 
     #入力欄
     if kbdtf == 0:
       pg.draw.rect(screen,"#bbccee",(disp_w/2-150,disp_h*5//6,300,50))
     elif kbdtf == 1:
-      pg.draw.rect(screen,"#aabbdd",(disp_w/2-150,disp_h*5//6,300,50))
+      pg.draw.rect(screen,"#aaddbb",(disp_w/2-150,disp_h*5//6,300,50))
     screen.blit(font4.render(f"/{kbd}", True, (0,0,0)), (disp_w/2-150,disp_h*5//6))
+
 
     # 画面出力の更新と同期
     pg.display.update()
