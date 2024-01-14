@@ -4,10 +4,9 @@ import pygame as pg
 
 
 
-poses = []
-poses.append([[1,1,1],"green"])
 
-rotation = [30,0,0]
+
+
 
 
 def rot(point,rotation):
@@ -47,6 +46,13 @@ def main():
   clock  = pg.time.Clock()
   exit_flag = False
   exit_code = '000'
+  betf = 0
+  aftf = 1
+
+  poses = []
+  poses.append([[1,1,1],"green"])
+
+  rotation = [45,45,45]
 
 
   while not exit_flag:
@@ -59,20 +65,36 @@ def main():
         if event.key == pg.K_ESCAPE:
           exit_flag = True
           exit_code = "002"
+      if event.type == pg.MOUSEBUTTONDOWN:
+        # 左
+        if event.button == 1:
+          if disp_w-116 <= event.pos[0] <= disp_w-116+20 and 40 <= event.pos[1] <= 40+20:
+            if grid>=100 : grid -=50
+          if disp_w-79 <= event.pos[0] <= disp_w-79+20 and 40 <= event.pos[1] <= 40+20:
+            if grid<=150 : grid +=50
+
+          if disp_w-90 <= event.pos[0] <= disp_w-90+20 and 120 <= event.pos[1] <= 120+20:
+            if betf == 0 : betf = 1
+          if disp_w-90 <= event.pos[0] <= disp_w-90+20 and 160 <= event.pos[1] <= 160+20:
+            if aftf == 0 : aftf = 1
+          if disp_w-70 <= event.pos[0] <= disp_w-70+20 and 120 <= event.pos[1] <= 120+20:
+            if betf == 1 : betf = 0
+          if disp_w-70 <= event.pos[0] <= disp_w-70+20 and 160 <= event.pos[1] <= 160+20:
+            if aftf == 1 : aftf = 0
+          print('left:', event.pos)
 
     screen.fill(pg.Color("#ffffff"))
 
 
 
-    Blue = pg.Color(0,50,200)
-    Red = pg.Color(200,50,200)
-    Black = pg.Color(0,0,0)
+
     Grid_L = pg.Color(0,150,150)
     Grid_S = pg.Color(0,175,175)
     
 
     font1 = pg.font.SysFont("", int(3*grid/10))
     font2 = pg.font.SysFont("UDデジタル教科書体", 50)
+    font3 = pg.font.SysFont("UDデジタル教科書体", 25)
 
     #グリッド
     pg.draw.line(screen, Grid_L, (disp_w/2,0), (disp_w/2,disp_h), 2)
@@ -96,14 +118,42 @@ def main():
 
     #点
     for i in range(len(poses)):
-      pg.draw.circle(screen,"blue",(poses[i][0][0]*grid+disp_w/2,disp_h/2-poses[i][0][1]*grid),5)
-      pg.draw.circle(screen,poses[i][1],(rot(poses[i][0],rotation)[0]*grid+disp_w/2,disp_h/2-rot(poses[i][0],rotation)[1]*grid),5)
+      if betf == 1: 
+        pg.draw.circle(screen,"blue",(poses[i][0][0]*grid+disp_w/2,disp_h/2-poses[i][0][1]*grid),5)
+        screen.blit(font1.render(f"{i}", True, (0,0,0)), (poses[i][0][0]*grid+disp_w/2+4,disp_h/2-poses[i][0][1]*grid-4))
+      if aftf == 1:
+        pg.draw.circle(screen,poses[i][1],(rot(poses[i][0],rotation)[0]*grid+disp_w/2,disp_h/2-rot(poses[i][0],rotation)[1]*grid),5)
+        screen.blit(font1.render(f"{i}", True, (0,0,0)), (rot(poses[i][0],rotation)[0]*grid+disp_w/2+4,disp_h/2-rot(poses[i][0],rotation)[1]*grid-4))
 
     #GUI
     pg.draw.rect(screen,"gray",(0,0,250,disp_h))
 
+    for j in range(len(poses)):
+      screen.blit(font3.render(f"{j} -> pos:({poses[j][0][0]},{poses[j][0][1]},{poses[j][0][2]}), color:{poses[j][1]}", True, (0,0,0)), (10, 40*j+20))
+
+
     pg.draw.rect(screen,"gray",(disp_w-250,0,250,disp_h))
-    screen.blit(font2.render("Zoom:", True, (0,0,0)), (disp_w-220, 30))
+    #拡大率
+    pg.draw.rect(screen,"green",(disp_w-116, 40,20,20))
+    pg.draw.rect(screen,"green",(disp_w-79, 40,20,20))
+    screen.blit(font2.render("Zoom:<  >", True, (0,0,0)), (disp_w-220, 30))
+    
+    #Before,Afterのクリック
+    if betf == 0:
+      pg.draw.rect(screen,"yellow",(disp_w-90, 120,20,20))
+    elif betf == 1:
+      pg.draw.rect(screen,"red",(disp_w-70, 120,20,20))
+    screen.blit(font2.render("Before: ", True, (0,0,0)), (disp_w-220, 110))
+
+
+    if aftf == 0:
+      pg.draw.rect(screen,"yellow",(disp_w-90, 160,20,20))
+    elif aftf == 1:
+      pg.draw.rect(screen,"red",(disp_w-70, 160,20,20))
+    screen.blit(font2.render("After   : ", True, (0,0,0)), (disp_w-220, 150))
+
+    #回転
+    
 
 
 
