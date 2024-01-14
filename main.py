@@ -43,13 +43,27 @@ def vec(r):
       if b == "," : b = 0
       if c == "," : c = 0
       return [a,b,c]
+
+def lvec(r):
+    if r == "," : return [0,0]
+    t = 0
+    for i in range(len(r)):
+      if r[i] == ",":
+        t += 1
+    if t !=1:
+      return [0,0]
+    else:
+      a, b = map(int, r.split(","))
+      if a == "," : a = 0
+      if b == "," : b = 0
+      return [a,b]
   
 #-------------------------------------------------------------------------------
 def main():
   
   pg.init() 
   pg.display.set_caption('Dimens.io')
-  disp_w, disp_h = 1200, 675 # DisplaySize(WindowSize)
+  disp_w, disp_h = 1200, 720 # DisplaySize(WindowSize)
   grid = 100 #200>X>50
   screen = pg.display.set_mode((disp_w,disp_h)) 
   clock  = pg.time.Clock()
@@ -68,6 +82,8 @@ def main():
   poses.append([1,1,1])
 
   rotation = [0,0,0]
+
+  lines = []
 
 
   while not exit_flag:
@@ -110,6 +126,9 @@ def main():
             
             if kbdtg == [3,0]:
               poses.append(vec(kbd))
+            
+            if kbdtg == [4,0]:
+              lines.append(lvec(kbd))
 
 
 
@@ -207,6 +226,13 @@ def main():
             if disp_w-200 <= event.pos[0] <= disp_w-200+120 and 600 <= event.pos[1] <= 600+40:
               kbdtf = 1
               kbdtg = [3,0]
+        
+          if disp_w-100<= event.pos[0] <= disp_w-100+50 and 200 <= event.pos[1] <= 200+20:
+            kbdtf = 1
+            kbdtg = [4,0]
+          
+          if disp_w-50<= event.pos[0] <= disp_w-50+50 and 200 <= event.pos[1] <= 200+20:
+            lines = []
 
     screen.fill(pg.Color("#ffffff"))
 
@@ -245,6 +271,10 @@ def main():
         pg.draw.line(screen, Grid_S, ((0,-h*grid+disp_h//2)), (disp_w,-h*grid+disp_h//2), 1)
         screen.blit(font1.render(f"{int(h)}", True, (0,0,0)), (disp_w/2+grid/10,-h*grid-grid/10+disp_h//2))
 
+    #lines
+    for k in range(len(lines)):
+      pg.draw.line(screen,"black",(rot(poses[(lines[k][0])],rotation)[0]*grid+disp_w/2,disp_h/2-rot(poses[(lines[k][0])],rotation)[1]*grid),(rot(poses[(lines[k][1])],rotation)[0]*grid+disp_w/2,disp_h/2-rot(poses[(lines[k][1])],rotation)[1]*grid),4)
+
     #点
     for i in range(len(poses)):
       if betf == 1: 
@@ -257,11 +287,14 @@ def main():
       
       #回転
       rotation[0] += vx
-      if rotation[0] >=360 : rotation[0] - 360
+      if rotation[0] >=360 : rotation[0] -= 360
+      if rotation[0] <= -360 : rotation[0] += 360
       rotation[1] += vy
-      if rotation[1] >=360 : rotation[1] - 360
+      if rotation[1] >=360 : rotation[1] -= 360
+      if rotation[1] <= -360 : rotation[1] += 360
       rotation[2] += vz
-      if rotation[2] >=360 : rotation[2] - 360
+      if rotation[2] >=360 : rotation[2] -= 360
+      if rotation[2] <= -360 : rotation[2] += 360
 
     #GUI
     pg.draw.rect(screen,"gray",(0,0,250,disp_h))
@@ -286,12 +319,16 @@ def main():
       pg.draw.rect(screen,"red",(disp_w-70, 120,20,20))
     screen.blit(font2.render("Before: ", True, (0,0,0)), (disp_w-220, 110))
 
-
     if aftf == 0:
       pg.draw.rect(screen,"yellow",(disp_w-90, 160,20,20))
     elif aftf == 1:
       pg.draw.rect(screen,"red",(disp_w-70, 160,20,20))
     screen.blit(font2.render("After   : ", True, (0,0,0)), (disp_w-220, 150))
+
+    #line
+    pg.draw.rect(screen,"green",(disp_w-100, 200,50,20))
+    pg.draw.rect(screen,"red",(disp_w-50, 200,50,20))
+    screen.blit(font2.render("Lines: ", True, (0,0,0)), (disp_w-220, 190))
 
     #回転
 
