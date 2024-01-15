@@ -2,6 +2,7 @@ import math
 import numpy as np
 import pygame as pg
 
+#回転行列
 def rot(point,rotation):
   
   rotation_x = math.radians(rotation[0]) * -1
@@ -69,6 +70,7 @@ def main():
   clock  = pg.time.Clock()
   exit_flag = False
   exit_code = '000'
+
   betf = 0
   aftf = 1
   kbd = ""
@@ -129,6 +131,8 @@ def main():
             
             if kbdtg == [4,0]:
               lines.append(lvec(kbd))
+            
+
 
 
 
@@ -233,6 +237,13 @@ def main():
           
           if disp_w-50<= event.pos[0] <= disp_w-50+50 and 200 <= event.pos[1] <= 200+20:
             lines = []
+          
+          if len(poses) >= 1:
+            if disp_w-80<= event.pos[0] <= disp_w-80+40 and 600 <= event.pos[1] <= 600+40:
+              lines.clear()
+              poses.pop(len(poses)-1)
+
+
 
     screen.fill(pg.Color("#ffffff"))
 
@@ -352,7 +363,9 @@ def main():
     #点追加
     screen.blit(font2.render("New Point", True, (0,0,0)), (disp_w-200, 550))
     pg.draw.rect(screen,"green",(disp_w-200,600,120,40))
-    
+
+    #点削除
+    pg.draw.rect(screen,"red",(disp_w-80,600,40,40))
 
 
 
