@@ -275,15 +275,16 @@ def main():
     
 
     #点&lines
-    for i in range(len(poses)):
-      if betf == 1: 
-        for k in range(len(lines)):
+    if betf == 1:
+      for k in range(len(lines)):
           pg.draw.line(screen,"black",(poses[(lines[k][0])][0]*grid+disp_w/2,disp_h/2-poses[(lines[k][0])][1]*grid),(poses[(lines[k][1])][0]*grid+disp_w/2,disp_h/2-poses[(lines[k][1])][1]*grid),4)
+      for i in range(len(poses)):
         pg.draw.circle(screen,"green",(poses[i][0]*grid+disp_w/2,disp_h/2-poses[i][1]*grid),5)
         screen.blit(font1.render(f"{i}", True, (0,0,0)), (poses[i][0]*grid+disp_w/2+4,disp_h/2-poses[i][1]*grid-4))
-      if aftf == 1:
-        for k in range(len(lines)):
-          pg.draw.line(screen,"black",(rot(poses[(lines[k][0])],rotation)[0]*grid+disp_w/2,disp_h/2-rot(poses[(lines[k][0])],rotation)[1]*grid),(rot(poses[(lines[k][1])],rotation)[0]*grid+disp_w/2,disp_h/2-rot(poses[(lines[k][1])],rotation)[1]*grid),4)
+    if aftf == 1:
+      for k in range(len(lines)):
+        pg.draw.line(screen,"black",(rot(poses[(lines[k][0])],rotation)[0]*grid+disp_w/2,disp_h/2-rot(poses[(lines[k][0])],rotation)[1]*grid),(rot(poses[(lines[k][1])],rotation)[0]*grid+disp_w/2,disp_h/2-rot(poses[(lines[k][1])],rotation)[1]*grid),4)
+      for i in range(len(poses)):
         pg.draw.circle(screen,"blue",(rot(poses[i],rotation)[0]*grid+disp_w/2,disp_h/2-rot(poses[i],rotation)[1]*grid),5)
         screen.blit(font1.render(f"{i}", True, (0,0,0)), (rot(poses[i],rotation)[0]*grid+disp_w/2+4,disp_h/2-rot(poses[i],rotation)[1]*grid-4))
 
