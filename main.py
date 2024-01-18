@@ -5,7 +5,7 @@ import pygame as pg
 #回転行列
 def rot(point,rotation):
   
-  rotation_x = math.radians(rotation[0]) * -1
+  rotation_x = math.radians(rotation[0]) 
   rotation_y = math.radians(rotation[1])
   rotation_z = math.radians(rotation[2])
   
